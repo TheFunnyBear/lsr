@@ -31,7 +31,23 @@ fun main() {
         val buildings = mutableListOf<Pair<String, Int>>()
         for (i in 0 until count) {
             val card = buildingCards.nth(i)
-            val rawName = card.locator("p.label.l1.bold").textContent()?.trim() ?: "(неизвестно)"
+/*
+            val texts = card.locator("p.label.l1.bold")
+            val tCount = texts.count()
+            println("Карточка $i: найдено $tCount элементов <p.label.l1.bold>")
+            for (j in 0 until tCount) {
+                val text = texts.nth(j).textContent()?.trim()
+                println("  $j: $text")
+            }
+*/
+            val paragraphs = card.locator("p.label.l1.bold")
+            val countP = paragraphs.count()
+
+            val rawName = (0 until countP)
+                .map { paragraphs.nth(it).textContent()?.trim() ?: "" }
+                .firstOrNull { it.lowercase().startsWith("дом") || it.matches(Regex("^\\d+$")) }
+                ?: "(неизвестно)"
+
             val name = rawName.replace(Regex("^дом\\s*", RegexOption.IGNORE_CASE), "")
             val flats = card.locator("span.buildingCard__count").first().textContent()?.trim()?.toIntOrNull() ?: 0
             buildings.add(name to flats)
